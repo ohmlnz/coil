@@ -1,5 +1,5 @@
-./Debug
-./x64
+Debug/
+x64/
 Coil.sln
 Coil.vcxproj
 Coil.vcxproj.filters
