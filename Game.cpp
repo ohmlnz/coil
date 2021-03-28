@@ -3,6 +3,8 @@
 #include <iostream>
 
 Entity entity;
+int velX, velY;
+double SPEED = 0.1;
 
 Game::~Game()
 {
@@ -19,7 +21,7 @@ void Game::init(const char* title, int posX, int posY, int screenWidth, int scre
 
 		if (SDL_NumJoysticks() < 1)
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "Warning: No joysticks connected!");
+			SDL_Log("Warning: No joysticks connected!");
 		}
 		else
 		{
@@ -28,7 +30,6 @@ void Game::init(const char* title, int posX, int posY, int screenWidth, int scre
 			{
 				SDL_Log("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
 			}
-			std::cout << "controller connected!" << std::endl;
 		}
 
 		if (renderer)
@@ -40,7 +41,7 @@ void Game::init(const char* title, int posX, int posY, int screenWidth, int scre
 		TTF_Init();
 
 		// TODO: test only - to be removed
-		entity = Entity();
+		entity = Entity("assets/images/test_sprite.png", renderer);
 
 		isRunning = true;
 	}
@@ -53,10 +54,12 @@ void Game::init(const char* title, int posX, int posY, int screenWidth, int scre
 
 void Game::handleEvents()
 {
+	// SDL converts the stick position into a number between -32768 and 32767. 
+	// This deadzone allows us to define a window we can ignore, thus avoiding
+	// light taps on the stick.
 	const int JOYSTICK_DEAD_ZONE = 8000;
 	double currentX = 0.0;
 	double currentY = 0.0;
-	double SPEED = 0.3;
 
 	SDL_PollEvent(&event);
 
@@ -65,27 +68,27 @@ void Game::handleEvents()
 		case SDL_QUIT:
 			isRunning = false;
 			break;
-		case SDL_KEYDOWN:
-			switch (event.key.keysym.scancode)
-			{
-				case SDL_SCANCODE_UP:
-					currentY = entity.getY();
-					entity.setY(currentY - SPEED);
-					break;
-				case SDL_SCANCODE_LEFT:
-					currentX = entity.getX();
-					entity.setX(currentX - SPEED);
-					break;
-				case SDL_SCANCODE_DOWN:
-					currentY = entity.getY();
-					entity.setY(currentY + SPEED);
-					break;
-				case SDL_SCANCODE_RIGHT:
-					currentX = entity.getX();
-					entity.setX(currentX + SPEED);
-					break;
-			}
-			break;
+		//case SDL_KEYDOWN:
+		//	switch (event.key.keysym.scancode)
+		//	{
+		//		case SDL_SCANCODE_UP:
+		//			currentY = entity.getY();
+		//			entity.setY(currentY - SPEED);
+		//			break;
+		//		case SDL_SCANCODE_LEFT:
+		//			currentX = entity.getX();
+		//			entity.setX(currentX - SPEED);
+		//			break;
+		//		case SDL_SCANCODE_DOWN:
+		//			currentY = entity.getY();
+		//			entity.setY(currentY + SPEED);
+		//			break;
+		//		case SDL_SCANCODE_RIGHT:
+		//			currentX = entity.getX();
+		//			entity.setX(currentX + SPEED);
+		//			break;
+		//	}
+		//	break;
 		case SDL_JOYAXISMOTION:
 			//Motion on controller 0
 			if (event.jaxis.which == 0)
@@ -96,14 +99,16 @@ void Game::handleEvents()
 					//Left of dead zone
 					if (event.jaxis.value < -JOYSTICK_DEAD_ZONE)
 					{
-						currentX = entity.getX();
-						entity.setX(currentX - SPEED);
+						velX = -1;
 					}
 					//Right of dead zone
 					else if (event.jaxis.value > JOYSTICK_DEAD_ZONE)
 					{
-						currentX = entity.getX();
-						entity.setX(currentX + SPEED);
+						velX = 1;
+					}
+					else
+					{
+						velX = 0;
 					}
 				}
 				//Y axis motion
@@ -112,14 +117,16 @@ void Game::handleEvents()
 					//Below of dead zone
 					if (event.jaxis.value < -JOYSTICK_DEAD_ZONE)
 					{
-						currentY = entity.getY();
-						entity.setY(currentY - SPEED);
+						velY = -1;
 					}
 					//Above of dead zone
 					else if (event.jaxis.value > JOYSTICK_DEAD_ZONE)
 					{
-						currentY = entity.getY();
-						entity.setY(currentY + SPEED);
+						velY = 1;
+					}
+					else
+					{
+						velY = 0;
 					}
 				}
 			}
@@ -138,7 +145,9 @@ void Game::render(double lag)
 {
 	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 	SDL_RenderClear(renderer);
-	entity.draw(renderer);
+	entity.setX(entity.getX() + double(velX) * SPEED);
+	entity.setY(entity.getY() + double(velY) * SPEED);
+	entity.draw();
 	SDL_RenderPresent(renderer);
 }
 

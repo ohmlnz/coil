@@ -1,18 +1,26 @@
 #pragma once
 
+#include "AssetsManager.h"
+
 class Entity
 {
 public:
-	void draw(SDL_Renderer* renderer) {
-		SDL_Rect r;
-		r.x = _x;
-		r.y = _y;
-		r.w = 50;
-		r.h = 50;
+	Entity() {};
 
-		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+	Entity(const char* filePath, SDL_Renderer* renderer) : _filePath(filePath), _renderer(renderer) {
+		_texture = AssetsManager::LoadTexture(filePath, renderer);
+	}
 
-		SDL_RenderFillRect(renderer, &r);
+	void draw() {
+		SDL_Rect srcRect, destRect;
+
+		srcRect.w = destRect.w = _width;
+		srcRect.h = destRect.h = _height;
+		srcRect.x = srcRect.y = 0;
+		destRect.x = _x;
+		destRect.y = _y;
+
+		SDL_RenderCopy(_renderer, _texture, &srcRect, &destRect);
 	}
 
 	void setX(double x) {
@@ -32,6 +40,11 @@ public:
 	}
 
 private:
+	int _height = 45;
+	int _width = 32;
 	double _x = 50;
 	double _y = 50;
+	const char* _filePath;
+	SDL_Texture* _texture;
+	SDL_Renderer* _renderer;
 };
