@@ -1,14 +1,17 @@
 #pragma once
 
-#include "AssetsManager.h"
+#include "utils/AssetsManager.h"
 
 class Entity
 {
 public:
-	Entity() {};
+	Entity(const char* filePath, SDL_Renderer* renderer)
+		: _filePath(filePath), _renderer(renderer), _texture(AssetsManager::loadTexture(filePath, renderer))
+	{}
 
-	Entity(const char* filePath, SDL_Renderer* renderer) : _filePath(filePath), _renderer(renderer) {
-		_texture = AssetsManager::LoadTexture(filePath, renderer);
+	void update() {
+		_x = _x + double(velX) * _SPEED;
+		_y = _y + double(velY) * _SPEED;
 	}
 
 	void draw() {
@@ -23,6 +26,7 @@ public:
 		SDL_RenderCopy(_renderer, _texture, &srcRect, &destRect);
 	}
 
+	// TODO: create Vector2F class to handle x and y
 	void setX(double x) {
 		_x = x;
 	}
@@ -39,9 +43,11 @@ public:
 		return _y;
 	}
 
+	int velX, velY;
 private:
-	int _height = 45;
-	int _width = 32;
+	int _SPEED = 3.15;
+	int _width = 16;
+	int _height = 23;
 	double _x = 50;
 	double _y = 50;
 	const char* _filePath;

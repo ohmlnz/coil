@@ -1,6 +1,7 @@
 #pragma once
 #include "SDL.h"
 #include "SDL_ttf.h"
+#include "World.h"
 
 class Game
 {
@@ -13,9 +14,10 @@ public:
 	void clean();
 	bool running();
 private:
-	bool isRunning;
-	SDL_Joystick* gameController;
-	SDL_Event event;
-	SDL_Window* window;
-	SDL_Renderer* renderer;
+	bool _isRunning;
+	World* _world;
+	SDL_Joystick* _gameController;
+	SDL_Event _event;
+	SDL_Window* _window;
+	SDL_Renderer* _renderer;
 };
