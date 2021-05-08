@@ -21,9 +21,9 @@ void World::loadMap(Node* node)
 	// load assets
 	// TODO: add to the assetsmanager singleton
 	_currentNode = node;
-	std::ifstream inputFile(_currentNode->_path);
-	nlohmann::json jsonFile;
-	inputFile >> jsonFile;
+	//std::ifstream inputFile(_currentNode->_path);
+	//nlohmann::json jsonFile;
+	//inputFile >> jsonFile;
 
 	_map = new TileMap(_renderer, _currentNode);
 }

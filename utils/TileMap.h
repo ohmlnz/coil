@@ -25,7 +25,7 @@ public:
 	//bool isTileCollidable(int id) const;
 	//bool isAnimationCurrentlyRunning(int id, int position) const;
 private:
-	int const _tilesetWidth = 22;
+	int const _tilesetWidth = 10;
 	int const _BLOCK_SIZE = 16;
 	int _mapTotalBlocks;
 	int _mapWidth;
@@ -35,4 +35,5 @@ private:
 	cute_tiled_map_t* _mapData;
 	Node* _currentNode;
 	//std::vector<AnimationManager*> animatedTiles;
+	std::string _texturePath = "assets/maps/dungeon-atlas.png";
 };

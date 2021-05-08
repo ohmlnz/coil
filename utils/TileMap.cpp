@@ -6,9 +6,9 @@
 #include "../World.h"
 
 TileMap::TileMap(SDL_Renderer* renderer, Node* node)
-	: _renderer(renderer), _mapTexture(AssetsManager::loadTexture(node->_texturePath.c_str(), _renderer)), _currentNode(node)
+	: _renderer(renderer), _mapTexture(AssetsManager::loadTexture(_texturePath.c_str(), _renderer)), _currentNode(node)
 {
-	cute_tiled_map_t* loadedMap = cute_tiled_load_map_from_file(node->_assetsPath.c_str(), NULL);
+	cute_tiled_map_t* loadedMap = cute_tiled_load_map_from_file(_currentNode->_mapPath.c_str(), NULL);
 	_mapWidth = (loadedMap->width) * _BLOCK_SIZE;
 	_mapHeight = (loadedMap->height) * _BLOCK_SIZE;
 	_mapTotalBlocks = (_mapWidth / _BLOCK_SIZE) * (_mapHeight / _BLOCK_SIZE);
@@ -32,12 +32,12 @@ void TileMap::render()
 		int data_count = layer->data_count;
 		for (int i = 0; i < _mapTotalBlocks; i++)
 		{
-			if (i == (_currentNode->_triggerY * (_mapWidth / _BLOCK_SIZE) + _currentNode->_triggerX) 
-				&& (_currentNode->_rightNode != nullptr) || (_currentNode->_leftNode != nullptr))
-			{
-				// TODO: add special tile
-				continue;
-			}
+			//if (i == (_currentNode->_triggerY * (_mapWidth / _BLOCK_SIZE) + _currentNode->_triggerX) 
+			//	&& (_currentNode->_rightNode != nullptr) || (_currentNode->_leftNode != nullptr))
+			//{
+			//	// TODO: add special tile
+			//	continue;
+			//}
 
 			if (data[i] > 0)
 			{
@@ -160,13 +160,30 @@ void TileMap::update(Entity* player, World* world)
 	int playerY = player->getY();
 
 
-	if ((playerX / _BLOCK_SIZE == _currentNode->_triggerX) && ((playerY / _BLOCK_SIZE) + 1 == _currentNode->_triggerY))
-	{
-		cute_tiled_map_t* oldMapData = _mapData;
-		SDL_Texture* oldTexture = _mapTexture;
-		// TODO: figure out which one needs to get loaded
-		world->loadMap(_currentNode->_rightNode);
-		SDL_DestroyTexture(_mapTexture);
-		cute_tiled_free_map(oldMapData);
-	}
+	//if ((playerX / _BLOCK_SIZE == _currentNode->_triggerX) && ((playerY / _BLOCK_SIZE) + 1 == _currentNode->_triggerY))
+	//{
+	//	cute_tiled_map_t* oldMapData = _mapData;
+	//	SDL_Texture* oldTexture = _mapTexture;
+	//	// TODO: figure out which one needs to get loaded
+	//	// TODO: investigate small spike in memory
+	//	if (_currentNode->_triggerX == 0)
+	//	{
+	//		player->setX(29 * _BLOCK_SIZE);
+	//	}
+	//	else if ((_currentNode->_triggerX == 29))
+	//	{
+	//		player->setX(0);
+	//	}
+	//	else if (_currentNode->_triggerY == 0)
+	//	{
+	//		player->setY(16 * _BLOCK_SIZE);
+	//	}
+	//	else
+	//	{
+	//		player->setY(0);
+	//	}
+	//	world->loadMap(_currentNode->_rightNode);
+	//	SDL_DestroyTexture(_mapTexture);
+	//	cute_tiled_free_map(oldMapData);
+	//}
 }
