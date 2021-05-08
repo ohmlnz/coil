@@ -4,20 +4,22 @@
 #include <string>
 #include <iostream>
 #include <queue>
+#include <algorithm>
 
 class Node
 {
 public:
-	Node(int id, int direction, Node* rightNode = nullptr, Node* leftNode = nullptr, Node* parentNode = nullptr)
-		: _id(id), _direction(direction), _rightNode(rightNode), _leftNode(leftNode), _parentNode(parentNode)
+	Node() {}
+	Node(int id, Node* rightNode = nullptr, Node* leftNode = nullptr, Node* parentNode = nullptr)
+		: _id(id), _rightNode(rightNode), _leftNode(leftNode), _parentNode(parentNode)
 	{}
 	int _id;
-	int _direction;
 	Node* _rightNode;
 	Node* _leftNode;
 	Node* _parentNode;
 	std::string _mapPath;
 	std::vector<int> _doorsLocation;
+	int _opposedToParentDoor;
 private:
 
 };
@@ -90,7 +92,7 @@ private:
 		{
 			std::cout << prefix;
 
-			std::cout << (isLeft ? "|---" : "L__");
+			std::cout << (isLeft ? "L__" : "R__");
 
 			std::cout << node->_id << std::endl;
 
@@ -133,6 +135,7 @@ private:
 	std::string findMap(Node* node) {
 		bool hasParentNode = node->_parentNode != nullptr;
 		int nbOfNeededDoors = int(hasParentNode) + int(node->_leftNode != nullptr) + int(node->_rightNode != nullptr);
+		std::vector<Node> randomNodes;
 
 		for (auto map : _maps)
 		{
@@ -158,35 +161,42 @@ private:
 			{
 				if (!hasParentNode) // root node
 				{
+					Node newNode;
+					newNode._mapPath = map;
 					for (int i = 0; i < nbOfAvailableDoors; i++)
 					{
-						node->_doorsLocation.push_back(getDoorIndex(currentDoors[i]));
+						newNode._doorsLocation.push_back(getDoorIndex(currentDoors[i]));
 					}
-					return map;
+					randomNodes.push_back(newNode);
 				}
 				else
 				{
-					int parentDoor = getParentDoor(node->_parentNode->_doorsLocation);
+					int parentDoor = getParentDoor(node);
 					int opposedToParentDoor = getOpposedDoor(parentDoor);
 					
 					for (int i = 0; i < nbOfAvailableDoors; i++)
 					{
 						if (getDoorIndex(currentDoors[i]) == opposedToParentDoor)
 						{
+							Node newNode;
+							newNode._mapPath = map;
+							newNode._opposedToParentDoor = opposedToParentDoor;
 							for (int i = 0; i < nbOfAvailableDoors; i++)
 							{
-								node->_doorsLocation.push_back(getDoorIndex(currentDoors[i]));
+								newNode._doorsLocation.push_back(getDoorIndex(currentDoors[i]));
 							}
-							return map;
+							randomNodes.push_back(newNode);
+							break;
 						}
 					}
-					
 				}
 			}
 
 		}
-
-		return "no-map-found";
+		Node selectedNode = randomNodes[rand() % randomNodes.size()];
+		node->_doorsLocation = selectedNode._doorsLocation;
+		node->_opposedToParentDoor = selectedNode._opposedToParentDoor;
+		return selectedNode._mapPath;
 	}
 
 	int getOpposedDoor(int doorIndex) {
@@ -200,18 +210,51 @@ private:
 		}
 	}
 
-	int getParentDoor(std::vector<int> doors) {
-		int minVal = doors[0];
+	int getParentDoor(Node* currentNode) {
+		Node* parentNode = currentNode->_parentNode;
+		bool hasParentTwoSiblings = (parentNode->_leftNode != nullptr) && (parentNode->_rightNode != nullptr);
+		std::vector<int> doors = parentNode->_doorsLocation;
+		std::sort(doors.begin(), doors.end());
 
-		for (auto door : doors)
+		if (parentNode->_parentNode == nullptr) // if parent is root node
 		{
-			if (door < minVal)
+			if (!hasParentTwoSiblings)
 			{
-				minVal = door;
+				return doors[0];
+			}
+			else
+			{
+				if (parentNode->_rightNode == currentNode)
+				{
+					return doors[0];
+				} 
+				else
+				{
+					return doors[1];
+				}
 			}
 		}
+		else
+		{
+			std::vector<int> filteredDoors;
 
-		return minVal;
+			for (auto door : doors)
+			{
+				if (door != parentNode->_opposedToParentDoor)
+				{
+					filteredDoors.push_back(door);
+				}
+			}
+
+			if (!hasParentTwoSiblings || parentNode->_rightNode == currentNode)
+			{
+				return filteredDoors[0];
+			}
+			else
+			{
+				return filteredDoors[1];
+			}
+		}
 	}
 
 	int getDoorIndex(std::string door) {
@@ -226,8 +269,7 @@ private:
 		int random = 10;
 		for (int index = 0; index < random; index++)
 		{
-			int direction = rand() % 4 + 1;
-			Node* node = new Node(index, direction);
+			Node* node = new Node(index);
 			addNode(node);
 		}
 		printBT(_root);
