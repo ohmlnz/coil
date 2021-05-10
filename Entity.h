@@ -43,13 +43,21 @@ public:
 		return _y;
 	}
 
+	int getWidth() {
+		return _width;
+	}
+
+	int getHeight() {
+		return _height;
+	}
+
 	int velX, velY;
 private:
 	int _SPEED = 3.15;
 	int _width = 16;
 	int _height = 23;
-	double _x = 50;
-	double _y = 50;
+	double _x = 100;
+	double _y = 100;
 	const char* _filePath;
 	SDL_Texture* _texture;
 	SDL_Renderer* _renderer;

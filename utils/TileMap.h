@@ -19,6 +19,7 @@ public:
 	~TileMap();
 	void render();
 	void update(Entity* player, World* world);
+	void deleteOldMapData();
 	//void animate();
 	struct cute_tiled_tile_descriptor_t& getTile(int id);
 	//bool isTileAnimated(int id) const;

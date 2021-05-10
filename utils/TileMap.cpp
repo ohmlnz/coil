@@ -4,15 +4,18 @@
 #define MYNULL NULL
 #include <iostream>
 #include "../World.h"
+#include <algorithm>
 
 TileMap::TileMap(SDL_Renderer* renderer, Node* node)
-	: _renderer(renderer), _mapTexture(AssetsManager::loadTexture(_texturePath.c_str(), _renderer)), _currentNode(node)
+	: _renderer(renderer), _currentNode(node)
 {
+	_mapTexture = AssetsManager::loadTexture(_texturePath.c_str(), _renderer);
 	cute_tiled_map_t* loadedMap = cute_tiled_load_map_from_file(_currentNode->_mapPath.c_str(), NULL);
 	_mapWidth = (loadedMap->width) * _BLOCK_SIZE;
 	_mapHeight = (loadedMap->height) * _BLOCK_SIZE;
 	_mapTotalBlocks = (_mapWidth / _BLOCK_SIZE) * (_mapHeight / _BLOCK_SIZE);
 	_mapData = loadedMap;
+	std::sort(_currentNode->_doorsLocation.begin(), _currentNode->_doorsLocation.end());
 	return;
 }
 
@@ -153,37 +156,117 @@ struct cute_tiled_tile_descriptor_t& TileMap::getTile(int id)
 	throw "The tile does not exist";
 }
 
+struct doorCoordinates
+{
+	int x;
+	int y;
+};
+
+struct doorCoordinates getDoorIndex(int doorIndex) {
+	if (doorIndex == 0)
+	{
+		return doorCoordinates{ 14, 0 };
+	}
+	else if (doorIndex == 1)
+	{
+		return doorCoordinates{ 29, 7 };
+	}
+	else if (doorIndex == 2)
+	{
+		return doorCoordinates{ 14, 16 };
+	}
+	else if (doorIndex == 3)
+	{
+		return doorCoordinates{ 0, 7 };
+	}
+}
+
+void TileMap::deleteOldMapData()
+{
+	cute_tiled_map_t* oldMapData = _mapData;
+	SDL_Texture* oldTexture = _mapTexture;
+	SDL_DestroyTexture(oldTexture);
+	cute_tiled_free_map(oldMapData);
+}
+
 void TileMap::update(Entity* player, World* world)
 {
+	// TODO: turn map detection into method
 	// TODO: replace by 2dVector
-	int playerX = player->getX();
-	int playerY = player->getY();
+	int pX = player->getX();
+	int pY = player->getY();
+	int pHeight = player->getHeight();
+	int pWidth = player->getWidth();
+	int nbOfDoors = _currentNode->_doorsLocation.size();
+
+	for (auto doorIndex : _currentNode->_doorsLocation)
+	{
+		doorCoordinates doorCoordinates = getDoorIndex(doorIndex);
+
+		// TODO: improve detection of tiles
+		// should perhaps translate the x,y coordinate of the texture?
+		if (doorCoordinates.x == (pX / _BLOCK_SIZE) && doorCoordinates.y == (pY / _BLOCK_SIZE) )
+		{
+			if (doorIndex == _currentNode->_opposedToParentDoor)
+			{
+				world->loadMap(_currentNode->_parentNode);
+			}
+			else
+			{
+				std::vector<int> filtered;
+				for (auto doorIndex : _currentNode->_doorsLocation)
+				{
+					if (doorIndex != _currentNode->_opposedToParentDoor)
+					{
+						filtered.push_back(doorIndex);
+					}
+				}
+
+				if (filtered.size() == 1)
+				{
+					if (_currentNode->_rightNode != nullptr)
+					{
+						world->loadMap(_currentNode->_rightNode);
+					}
+					else
+					{
+						world->loadMap(_currentNode->_leftNode);
+					}
+				}
+				else
+				{
+					if (doorIndex == filtered[0])
+					{
+						world->loadMap(_currentNode->_rightNode);
+					}
+					else
+					{
+						world->loadMap(_currentNode->_leftNode);
+					}
+				}
+
+			}
+
+			deleteOldMapData();
 
 
-	//if ((playerX / _BLOCK_SIZE == _currentNode->_triggerX) && ((playerY / _BLOCK_SIZE) + 1 == _currentNode->_triggerY))
-	//{
-	//	cute_tiled_map_t* oldMapData = _mapData;
-	//	SDL_Texture* oldTexture = _mapTexture;
-	//	// TODO: figure out which one needs to get loaded
-	//	// TODO: investigate small spike in memory
-	//	if (_currentNode->_triggerX == 0)
-	//	{
-	//		player->setX(29 * _BLOCK_SIZE);
-	//	}
-	//	else if ((_currentNode->_triggerX == 29))
-	//	{
-	//		player->setX(0);
-	//	}
-	//	else if (_currentNode->_triggerY == 0)
-	//	{
-	//		player->setY(16 * _BLOCK_SIZE);
-	//	}
-	//	else
-	//	{
-	//		player->setY(0);
-	//	}
-	//	world->loadMap(_currentNode->_rightNode);
-	//	SDL_DestroyTexture(_mapTexture);
-	//	cute_tiled_free_map(oldMapData);
-	//}
+			if (doorCoordinates.x == 0)
+			{
+				player->setX(27 * _BLOCK_SIZE);
+			}
+			else if (doorCoordinates.x == 29)
+			{
+				player->setX(2 * _BLOCK_SIZE);
+			}
+			else if (doorCoordinates.y == 0)
+			{
+				player->setY(14 * _BLOCK_SIZE);
+			}
+			else
+			{
+				player->setY(2 * _BLOCK_SIZE);
+			}
+
+		}
+	}
 }

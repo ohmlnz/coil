@@ -19,7 +19,7 @@ public:
 	Node* _parentNode;
 	std::string _mapPath;
 	std::vector<int> _doorsLocation;
-	int _opposedToParentDoor;
+	int _opposedToParentDoor = -1;
 private:
 
 };
@@ -159,7 +159,7 @@ private:
 			
 			if (nbOfAvailableDoors == nbOfNeededDoors)
 			{
-				if (!hasParentNode) // root node
+				if (!hasParentNode)
 				{
 					Node newNode;
 					newNode._mapPath = map;
@@ -216,7 +216,7 @@ private:
 		std::vector<int> doors = parentNode->_doorsLocation;
 		std::sort(doors.begin(), doors.end());
 
-		if (parentNode->_parentNode == nullptr) // if parent is root node
+		if (parentNode->_parentNode == nullptr)
 		{
 			if (!hasParentTwoSiblings)
 			{
@@ -246,13 +246,20 @@ private:
 				}
 			}
 
-			if (!hasParentTwoSiblings || parentNode->_rightNode == currentNode)
+			if (!hasParentTwoSiblings)
 			{
 				return filteredDoors[0];
 			}
 			else
 			{
-				return filteredDoors[1];
+				if (parentNode->_rightNode == currentNode)
+				{
+					return filteredDoors[0];
+				}
+				else
+				{
+					return filteredDoors[1];
+				}
 			}
 		}
 	}
