@@ -1,29 +1,50 @@
 #pragma once
-
 #include "utils/AssetsManager.h"
+#include "utils/InputManager.h"
+#include "utils/GraphicsManager.h"
+
+enum entityState {
+	IDLE,
+	WALKING,
+	RUNNING,
+	SHOOTING,
+};
+
+enum entityDirections {
+	DOWN = 0,
+	RIGHT = 16,
+	LEFT = 32,
+	UP = 48
+};
+
 
 class Entity
 {
 public:
-	Entity(const char* filePath, SDL_Renderer* renderer)
-		: _filePath(filePath), _renderer(renderer), _texture(AssetsManager::loadTexture(filePath, renderer))
+	Entity(InputManager* input, GraphicsManager* graphics)
+		:	_input(input),
+			_graphics(graphics)
 	{}
 
-	void update() {
-		_x = _x + double(velX) * _SPEED;
-		_y = _y + double(velY) * _SPEED;
+	void update(SDL_Event* event) {
+		// TODO: use component pattern to handle:
+		// animation - inputs - fight
+		if (_input != nullptr)
+		{
+			_input->update(*this, event);
+		}
+
+		if (_graphics != nullptr)
+		{
+			_graphics->update(*this);
+		}
 	}
 
-	void draw() {
-		SDL_Rect srcRect, destRect;
-
-		srcRect.w = destRect.w = _width;
-		srcRect.h = destRect.h = _height;
-		srcRect.x = srcRect.y = 0;
-		destRect.x = _x;
-		destRect.y = _y;
-
-		SDL_RenderCopy(_renderer, _texture, &srcRect, &destRect);
+	void render() {
+		if (_graphics != nullptr)
+		{
+			_graphics->render(*this);
+		}
 	}
 
 	// TODO: create Vector2F class to handle x and y
@@ -51,14 +72,47 @@ public:
 		return _height;
 	}
 
-	int velX, velY;
+	int getVelX() {
+		return _velX;
+	}
+
+	int getVelY() {
+		return _velY;
+	}
+
+	void setVelX(int velX) {
+		_velX = velX;
+	}
+
+	void setVelY(int velY) {
+		_velY = velY;
+	}
+
+	void setState(enum entityState newState) {
+		_currentState = newState;
+	}
+
+	void setDirection(enum entityDirections newDirection) {
+		_currentDirection = newDirection;
+	}
+
+	entityState getState() {
+		return _currentState;
+	}
+
+	entityDirections getDirection() {
+		return _currentDirection;
+	}
+
 private:
-	int _SPEED = 3.15;
+	int _velX, _velY;
 	int _width = 16;
-	int _height = 23;
+	int _height = 16;
 	double _x = 100;
 	double _y = 100;
-	const char* _filePath;
-	SDL_Texture* _texture;
-	SDL_Renderer* _renderer;
+	InputManager* _input;
+	GraphicsManager* _graphics;
+	// TODO: should decouple into component specific states?
+	entityState _currentState = IDLE;
+	entityDirections _currentDirection = DOWN;
 };

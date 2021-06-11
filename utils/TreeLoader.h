@@ -28,21 +28,16 @@ class TreeLoader
 {
 public:
 	TreeLoader() {
-		// initialize random seed
 		srand(time(NULL));
-
 		generateNodes();
 	}
 
 	Node* getRootNode() {
 		return _root;
 	}
-
-	void searchNode(int id) {
-
-	}
 private:
 	void deleteNode(Node* node) {
+		// TODO: link parent to siblings
 		delete node;
 	}
 
@@ -54,18 +49,17 @@ private:
 		}
 
 		Node* currentNode = _root;
-		bool isRightNode;
 
 		while (true)
 		{
-			isRightNode = rand() % 2 == 0;
-			if (isRightNode)
+			if (rand() % 2 == 0)
 			{
 				if (currentNode->_rightNode != nullptr)
 				{
 					currentNode = currentNode->_rightNode;
 				}
-				else {
+				else 
+				{
 					currentNode->_rightNode = node;
 					break;
 				}
@@ -273,13 +267,15 @@ private:
 	
 	void generateNodes() {
 		// TODO: add option to trigger randomization via keyboard input (debug mode)
-		int random = 10;
+		int random = rand() % 11 + 10;
+
 		for (int index = 0; index < random; index++)
 		{
 			Node* node = new Node(index);
 			addNode(node);
 		}
 		printBT(_root);
+		std::cout << std::endl;
 		appendMapData(_root);
 	}
 

@@ -10,7 +10,7 @@ void Game::init(const char* title, int posX, int posY, int screenWidth, int scre
 		_window = SDL_CreateWindow(title, posX, posY, screenWidth, screenHeight, flags);
 		_renderer = SDL_CreateRenderer(_window, -1, 0);
 
-		// TODO: decouple into its own class
+		// TODO: decouple into its own gamepadController class
 		if (SDL_NumJoysticks() < 1)
 		{
 			SDL_Log("Warning: No joysticks connected!");
@@ -52,14 +52,12 @@ void Game::handleEvents()
 			break;
 		// ... add other high level events here
 	}
-
-	_world->events(&_event);
 }
 
 
 void Game::update()
 {
-	_world->update();
+	_world->update(&_event);
 }
 
 // TODO: use lag value to normalize rendering on the screen

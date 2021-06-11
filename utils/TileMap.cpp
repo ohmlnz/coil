@@ -35,13 +35,6 @@ void TileMap::render()
 		int data_count = layer->data_count;
 		for (int i = 0; i < _mapTotalBlocks; i++)
 		{
-			//if (i == (_currentNode->_triggerY * (_mapWidth / _BLOCK_SIZE) + _currentNode->_triggerX) 
-			//	&& (_currentNode->_rightNode != nullptr) || (_currentNode->_leftNode != nullptr))
-			//{
-			//	// TODO: add special tile
-			//	continue;
-			//}
-
 			if (data[i] > 0)
 			{
 				if (false) {}
