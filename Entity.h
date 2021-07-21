@@ -11,10 +11,10 @@ enum entityState {
 };
 
 enum entityDirections {
-	DOWN = 0,
-	RIGHT = 16,
-	LEFT = 32,
-	UP = 48
+	DOWN,
+	RIGHT,
+	LEFT,
+	UP,
 };
 
 
