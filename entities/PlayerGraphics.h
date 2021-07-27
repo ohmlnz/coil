@@ -1,6 +1,6 @@
 #pragma once
 #include "SDL.h"
-#include "./utils/GraphicsManager.h"
+#include "../managers/GraphicsManager.h"
 
 class PlayerGraphics : public GraphicsManager
 {

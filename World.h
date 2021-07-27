@@ -1,11 +1,11 @@
 #pragma once
 #include "utils/TileMap.h"
 #include "utils/TreeLoader.h"
-#include "Entity.h"
+#include "entities/Entity.h"
 #include <vector>
 // TODO: to be removed once GraphicsManager gets added
-#include "PlayerInput.h"
-#include "PlayerGraphics.h"
+#include "entities/PlayerInput.h"
+#include "entities/PlayerGraphics.h"
 
 class World
 {

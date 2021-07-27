@@ -4,6 +4,7 @@
 #include <fstream>
 
 class Entity;
+class TileMap;
 
 class GraphicsManager
 {

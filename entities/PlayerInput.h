@@ -1,5 +1,5 @@
 #pragma once
-#include "./utils/InputManager.h"
+#include "./managers/InputManager.h"
 
 class PlayerInput : public InputManager
 {

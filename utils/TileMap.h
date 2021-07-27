@@ -2,8 +2,8 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "../libs/cute_tiled.h"
-#include "AssetsManager.h"
-#include "AnimationManager.h"
+#include "../managers/AssetsManager.h"
+#include "../managers/AnimationManager.h"
 #include <vector>
 #include "TreeLoader.h"
 
