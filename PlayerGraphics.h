@@ -9,13 +9,17 @@ public:
 		: GraphicsManager(filePath, renderer)
 	{}
 
-	virtual void update(Entity& entity) {
-		entity.setX(entity.getX() + double(entity.getVelX()) * _SPEED);
-		entity.setY(entity.getY() + double(entity.getVelY()) * _SPEED);
+	// TODO: should not be part of the graphics component
+	virtual void update(Entity& entity, TileMap* map) {
+		entity.setX(map, entity.getX() + double(entity.getVelX()) * _SPEED);
+		entity.setY(map, entity.getY() + double(entity.getVelY()) * _SPEED);
 	}
 
-	virtual void render(Entity& entity) {
-		animate(entity);
+	virtual void render(Entity& entity, bool& shouldBeAnimated) {
+		if (shouldBeAnimated)
+		{
+			animate(entity);
+		}
 
 		SDL_Rect srcRect, destRect;
 

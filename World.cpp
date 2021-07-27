@@ -42,12 +42,13 @@ void World::unloadMap(TileMap* map)
 void World::render(double lag)
 {
 	_map->render();
+	_map->animate();
 	// TODO: loop through all entities and draw them all
 	_testPlayer->render();
 }
 
 void World::update(SDL_Event* event)
 {
-	_map->update(_testPlayer, this);
-	_testPlayer->update(event);
+	//_map->update(_testPlayer, this);
+	_testPlayer->update(event, _map);
 }

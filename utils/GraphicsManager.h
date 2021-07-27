@@ -17,8 +17,8 @@ public:
 		std::string imagePath = "assets/sprites/" + std::string(_animations["meta"]["image"]);
 		_texture = AssetsManager::loadTexture(imagePath.c_str(), renderer);
 	}
-	virtual void update(Entity& entity) = 0;
-	virtual void render(Entity& entity) = 0;
+	virtual void update(Entity& entity, TileMap* map) = 0;
+	virtual void render(Entity& entity, bool& shouldBeAnimated) = 0;
 	virtual void animate(Entity& entity) = 0;
 	SDL_Texture* _texture;
 	SDL_Renderer* _renderer;
