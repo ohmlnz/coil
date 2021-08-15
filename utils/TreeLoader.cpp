@@ -5,6 +5,11 @@ TreeLoader::TreeLoader() {
 	generateNodes();
 }
 
+TreeLoader::~TreeLoader()
+{
+	deleteTree(_root);
+}
+
 Node* TreeLoader::getRootNode() {
 	return _root;
 }
@@ -84,8 +89,8 @@ void TreeLoader::appendMapData(Node* node) {
 
 		temp->_mapPath = findMap(temp);
 
-		std::cout << "Node id: " << temp->_id;
-		std::cout << " was assigned the following map: " << temp->_mapPath << std::endl;
+		//std::cout << "Node id: " << temp->_id;
+		//std::cout << " was assigned the following map: " << temp->_mapPath << std::endl;
 
 		if (temp->_leftNode != nullptr)
 		{
@@ -250,4 +255,15 @@ void TreeLoader::generateNodes() {
 	printBT(_root);
 	std::cout << std::endl;
 	appendMapData(_root);
+}
+
+void TreeLoader::deleteTree(Node* node)
+{
+	if (node != NULL)
+	{
+		deleteTree(node->_leftNode);
+		deleteTree(node->_rightNode);
+		delete node;
+		node = nullptr;
+	}
 }

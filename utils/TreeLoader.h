@@ -29,6 +29,7 @@ class TreeLoader
 {
 public:
 	TreeLoader();
+	~TreeLoader();
 	Node* getRootNode();
 private:
 	void deleteNode(Node* node);
@@ -41,7 +42,9 @@ private:
 	int getParentDoor(Node* currentNode);
 	int getDoorIndex(std::string door);
 	void generateNodes();
+	void deleteTree(Node* root);
 	Node* _root = nullptr;
+	TreeLoader* tree = nullptr;
 	std::string _texturePath = "assets/maps/dungeon-atlas.png";
 	std::string _maps[14] = {
 		"assets/maps/dungeon-1-b.json",
@@ -59,4 +62,6 @@ private:
 		"assets/maps/dungeon-3-t-l-r.json",
 		"assets/maps/dungeon-3-t-r-b.json",
 	};
+
+	friend class World;
 };

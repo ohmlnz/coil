@@ -78,6 +78,11 @@ void TileMap::animate()
 
 bool TileMap::isTileCollidable(int indexes[])
 {	
+	if (isLoadingMap)
+	{
+		return false;
+	}
+
 	cute_tiled_layer_t* layer = _mapData->layers;
 	int tilesIds[2];
 
@@ -93,10 +98,16 @@ bool TileMap::isTileCollidable(int indexes[])
 	}
 
 	cute_tiled_tile_descriptor_t* tiles = _mapData->tilesets->tiles;
+	const int DOOR_INDEX = 39;
 	while (tiles)
 	{
 		if (tiles->tile_index == (tilesIds[0] - 1) || tiles->tile_index == (tilesIds[1] - 1))
 		{
+			if (tiles->tile_index == DOOR_INDEX)
+			{
+				isLoadingMap = true;
+				loadNextMap();
+			}
 			return true;
 		}
 
@@ -149,120 +160,76 @@ struct cute_tiled_tile_descriptor_t& TileMap::getTile(int id)
 	throw "The tile does not exist";
 }
 
-struct doorCoordinates
-{
-	int x;
-	int y;
-};
-
-struct doorCoordinates getDoorIndex(int doorIndex) {
-	if (doorIndex == 0)
-	{
-		return doorCoordinates{ 14, 0 };
-	}
-	else if (doorIndex == 1)
-	{
-		return doorCoordinates{ 29, 7 };
-	}
-	else if (doorIndex == 2)
-	{
-		return doorCoordinates{ 14, 16 };
-	}
-	else if (doorIndex == 3)
-	{
-		return doorCoordinates{ 0, 7 };
-	}
+int TileMap::convertToDoorIndex(int doorIndex) {
+	if (doorIndex == 0) return 2; // DOWN
+	if (doorIndex == 1) return 1; // RIGHT
+	if (doorIndex == 2) return 3; // LEFT
+	if (doorIndex == 3) return 0; // UP
 }
 
-void TileMap::deleteOldMapData()
+void TileMap::update(Entity* player, World* world)
 {
+	_player = player;
+	_world = world;
+}
+
+void TileMap::loadNextMap()
+{
+	entityDirections currentDirection = _player->getDirection();
+	int doorIndex = convertToDoorIndex(currentDirection);
+	bool hasParentNode = _currentNode->_parentNode != nullptr;
+	std::vector<int> doorsLocations = _currentNode->_doorsLocation;
+
 	cute_tiled_map_t* oldMapData = _mapData;
 	SDL_Texture* oldTexture = _mapTexture;
+
+	if (hasParentNode)
+	{
+		if (doorsLocations[0] == doorIndex)
+		{
+			_world->loadMap(_currentNode->_parentNode);
+		}
+		else if (doorsLocations[1] == doorIndex)
+		{
+			_world->loadMap(_currentNode->_rightNode);
+		}
+		else if (doorsLocations[2] == doorIndex)
+		{
+			_world->loadMap(_currentNode->_leftNode);
+		}
+	}
+	else
+	{
+		if (doorsLocations[0] == doorIndex)
+		{
+			_world->loadMap(_currentNode->_rightNode);
+		}
+		else if (doorsLocations[1] == doorIndex)
+		{
+			_world->loadMap(_currentNode->_leftNode);
+		}
+	}
+
+
+	switch (_player->getDirection())
+	{
+		case UP:
+			_player->setY(this, 14 * _BLOCK_SIZE);
+			_player->setX(this, (27 * _BLOCK_SIZE) / 2);
+		case RIGHT:
+			_player->setX(this, 2 * _BLOCK_SIZE);
+			_player->setY(this, 6 * _BLOCK_SIZE);
+		case DOWN:
+			_player->setY(this, 2 * _BLOCK_SIZE);
+			_player->setX(this, (27 * _BLOCK_SIZE) / 2);
+		case LEFT:
+			_player->setX(this, 27 * _BLOCK_SIZE);
+			_player->setY(this, 6 * _BLOCK_SIZE);
+	}
+
 	SDL_DestroyTexture(oldTexture);
 	cute_tiled_free_map(oldMapData);
 }
-
-//void TileMap::update(Entity* player, World* world)
-//{
-	// TODO: turn map detection into method
-	// TODO: replace by 2dVector
-	//int pX = player->getX();
-	//int pY = player->getY();
-	//int pHeight = player->getHeight();
-	//int pWidth = player->getWidth();
-	//int nbOfDoors = _currentNode->_doorsLocation.size();
-
-	//for (auto doorIndex : _currentNode->_doorsLocation)
-	//{
-	//	doorCoordinates doorCoordinates = getDoorIndex(doorIndex);
-
-	//	// TODO: improve detection of tiles
-	//	// should perhaps translate the x,y coordinate of the texture?
-	//	if (doorCoordinates.x == (pX / _BLOCK_SIZE) && doorCoordinates.y == (pY / _BLOCK_SIZE) )
-	//	{
-	//		if (doorIndex == _currentNode->_opposedToParentDoor)
-	//		{
-	//			world->loadMap(_currentNode->_parentNode);
-	//		}
-	//		else
-	//		{
-	//			std::vector<int> filtered;
-	//			for (auto doorIndex : _currentNode->_doorsLocation)
-	//			{
-	//				if (doorIndex != _currentNode->_opposedToParentDoor)
-	//				{
-	//					filtered.push_back(doorIndex);
-	//				}
-	//			}
-
-	//			if (filtered.size() == 1)
-	//			{
-	//				if (_currentNode->_rightNode != nullptr)
-	//				{
-	//					world->loadMap(_currentNode->_rightNode);
-	//				}
-	//				else
-	//				{
-	//					world->loadMap(_currentNode->_leftNode);
-	//				}
-	//			}
-	//			else
-	//			{
-	//				if (doorIndex == filtered[0])
-	//				{
-	//					world->loadMap(_currentNode->_rightNode);
-	//				}
-	//				else
-	//				{
-	//					world->loadMap(_currentNode->_leftNode);
-	//				}
-	//			}
-
-	//		}
-
-	//		deleteOldMapData();
-
-
-	//		if (doorCoordinates.x == 0)
-	//		{
-	//			player->setX(27 * _BLOCK_SIZE);
-	//		}
-	//		else if (doorCoordinates.x == 29)
-	//		{
-	//			player->setX(2 * _BLOCK_SIZE);
-	//		}
-	//		else if (doorCoordinates.y == 0)
-	//		{
-	//			player->setY(14 * _BLOCK_SIZE);
-	//		}
-	//		else
-	//		{
-	//			player->setY(2 * _BLOCK_SIZE);
-	//		}
-
-	//	}
-	//}
-//}
 
 int TileMap::getMapWidth() const
 {

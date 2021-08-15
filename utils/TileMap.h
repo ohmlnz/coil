@@ -8,6 +8,7 @@
 #include "TreeLoader.h"
 
 // TODO: investigate forward reference
+class Entity;
 class World;
 
 class TileMap
@@ -17,22 +18,26 @@ public:
 	TileMap(SDL_Renderer* renderer, Node* node);
 	~TileMap();
 	void render();
-	//void update(Entity* player, World* world);
-	void deleteOldMapData();
+	void update(Entity* player, World* world);
+	void loadNextMap();
 	int getMapWidth() const;
 	int getMapHeight() const;
 	int getBlockSize() const;
+	int convertToDoorIndex(int doorIndex);
 	void animate();
 	struct cute_tiled_tile_descriptor_t& getTile(int id);
 	bool isTileAnimated(int id) const;
 	bool isTileCollidable(int indexes[]);
 	bool isAnimationCurrentlyRunning(int id, int position) const;
 private:
+	bool isLoadingMap = false;
 	int const _tilesetWidth = 10;
 	int const _BLOCK_SIZE = 16;
 	int _mapTotalBlocks;
 	int _mapWidth;
 	int _mapHeight;
+	Entity* _player;
+	World* _world;
 	SDL_Renderer* _renderer;
 	SDL_Texture* _mapTexture;
 	cute_tiled_map_t* _mapData;
