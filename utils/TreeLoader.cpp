@@ -20,6 +20,8 @@ void TreeLoader::deleteNode(Node* node) {
 }
 
 void TreeLoader::addNode(Node* node) {
+	int id = node->_id;
+
 	if (node->_id == 0)
 	{
 		_root = node;
@@ -55,6 +57,7 @@ void TreeLoader::addNode(Node* node) {
 			}
 		}
 	}
+	currentNode->_id = id;
 	node->_parentNode = currentNode;
 }
 
@@ -168,6 +171,7 @@ std::string TreeLoader::findMap(Node* node) {
 	Node selectedNode = randomNodes[rand() % randomNodes.size()];
 	node->_doorsLocation = selectedNode._doorsLocation;
 	node->_opposedToParentDoor = selectedNode._opposedToParentDoor;
+
 	return selectedNode._mapPath;
 }
 

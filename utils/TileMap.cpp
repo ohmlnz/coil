@@ -185,46 +185,85 @@ void TileMap::loadNextMap()
 
 	if (hasParentNode)
 	{
-		if (doorsLocations[0] == doorIndex)
+		std::vector<int> nonParentDoors;
+
+		for (auto doors : doorsLocations)
 		{
+			if (doors != _currentNode->_opposedToParentDoor)
+			{
+				nonParentDoors.push_back(doors);
+			}
+		}
+
+		if (_currentNode->_opposedToParentDoor == doorIndex)
+		{
+			std::cout << "load node: " << _currentNode->_parentNode->_id  << std::endl;
 			_world->loadMap(_currentNode->_parentNode);
 		}
-		else if (doorsLocations[1] == doorIndex)
+		else
 		{
-			_world->loadMap(_currentNode->_rightNode);
-		}
-		else if (doorsLocations[2] == doorIndex)
-		{
-			_world->loadMap(_currentNode->_leftNode);
+
+			if (nonParentDoors.size() == 2)
+			{
+				if (nonParentDoors[0] == doorIndex)
+				{
+					std::cout << "load node: " << _currentNode->_rightNode->_id << std::endl;
+					_world->loadMap(_currentNode->_rightNode);
+				}
+				else
+				{
+					std::cout << "load node: " << _currentNode->_leftNode->_id << std::endl;
+					_world->loadMap(_currentNode->_leftNode);
+				}
+			}
+			else
+			{
+				if (_currentNode->_rightNode != nullptr)
+				{
+					std::cout << "load node: " << _currentNode->_rightNode->_id << std::endl;
+					_world->loadMap(_currentNode->_rightNode);
+				}
+				else
+				{
+					std::cout << "load node: " << _currentNode->_leftNode->_id << std::endl;
+					_world->loadMap(_currentNode->_leftNode);
+				}
+			}
 		}
 	}
 	else
 	{
 		if (doorsLocations[0] == doorIndex)
 		{
+			std::cout << "load node: " << _currentNode->_rightNode->_id << std::endl;
 			_world->loadMap(_currentNode->_rightNode);
 		}
 		else if (doorsLocations[1] == doorIndex)
 		{
+			std::cout << "load node: " << _currentNode->_leftNode->_id << std::endl;
 			_world->loadMap(_currentNode->_leftNode);
 		}
 	}
 
-
+	// re-position player on the map
 	switch (_player->getDirection())
 	{
 		case UP:
-			_player->setY(this, 14 * _BLOCK_SIZE);
-			_player->setX(this, (27 * _BLOCK_SIZE) / 2);
+			_player->setX(this, 14 * _BLOCK_SIZE);
+			_player->setY(this, 15 * _BLOCK_SIZE);
+			break;
 		case RIGHT:
-			_player->setX(this, 2 * _BLOCK_SIZE);
-			_player->setY(this, 6 * _BLOCK_SIZE);
+			_player->setX(this, 1 * _BLOCK_SIZE);
+			_player->setY(this, 7 * _BLOCK_SIZE);
+			break;
 		case DOWN:
-			_player->setY(this, 2 * _BLOCK_SIZE);
-			_player->setX(this, (27 * _BLOCK_SIZE) / 2);
+			_player->setX(this, 14 * _BLOCK_SIZE);
+			_player->setY(this, 1 * _BLOCK_SIZE);
+			break;
 		case LEFT:
-			_player->setX(this, 27 * _BLOCK_SIZE);
-			_player->setY(this, 6 * _BLOCK_SIZE);
+			_player->setX(this, 28 * _BLOCK_SIZE);
+			_player->setY(this, 7 * _BLOCK_SIZE);
+			break;
 	}
 
 	SDL_DestroyTexture(oldTexture);
