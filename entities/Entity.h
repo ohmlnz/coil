@@ -2,54 +2,43 @@
 #include "../managers/AssetsManager.h"
 #include "../managers/InputManager.h"
 #include "../managers/GraphicsManager.h"
+#include "../managers/StateManager.h"
 #include "../utils/TileMap.h"
 
-enum entityState {
-	IDLE,
-	WALKING,
-	RUNNING,
-	SHOOTING,
+struct Position
+{
+	double _x = 100;
+	double _y = 100;
 };
 
-enum entityDirections {
-	DOWN,
-	RIGHT,
-	LEFT,
-	UP,
+struct Velocity
+{
+	int _velX;
+	int _velY;
 };
 
 class Entity
 {
 public:
-	Entity(InputManager* input, GraphicsManager* graphics);
+	Entity(InputManager* input, GraphicsManager* graphics, StateManager* state);
 	void update(SDL_Event* event, TileMap* map);
 	void render();
 	bool hasCollided(TileMap* map, double destX, double destY);
-	// TODO: create Vector2F class to handle x and y
-	void setX(TileMap* map, double x);
-	void setY(TileMap* map, double y);
-	double getX();
-	double getY();
 	int getWidth();
 	int getHeight();
-	int getVelX();
-	int getVelY();
-	void setVelX(int velX);
-	void setVelY(int velY);
-	void setState(enum entityState newState);
-	void setDirection(enum entityDirections newDirection);
-	entityState getState();
-	entityDirections getDirection();
+	Position getPosition();
+	Velocity getVelocity();
+	StateManager* getStateManager();
+	void setPosition(TileMap* map, double x, double y);
+	void setVelocity(int velX, int velY);
 private:
-	int _velX, _velY;
+	Position _position;
+	Velocity _velocity;
 	// TODO: values should come from Tiled's json file
 	int _width = 32;
 	int _height = 32;
-	double _x = 100;
-	double _y = 100;
 	InputManager* _input;
 	GraphicsManager* _graphics;
-	// TODO: should decouple into component specific states?
-	entityState _currentState = IDLE;
-	entityDirections _currentDirection = DOWN;
+	StateManager* _state;
+	// AIManager
 };

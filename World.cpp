@@ -13,7 +13,8 @@ World::World(SDL_Renderer* renderer)
 		_testPlayer(
 			new Entity(
 				new PlayerInput(),
-				new PlayerGraphics("assets/sprites/player.json", renderer)
+				new PlayerGraphics("assets/sprites/player.json", renderer),
+				new PlayerState()
 			)
 		)
 {

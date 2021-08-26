@@ -1,8 +1,10 @@
 #include "Entity.h"
 
-Entity::Entity(InputManager* input, GraphicsManager* graphics)
-	: _input(input),
-	_graphics(graphics)
+Entity::Entity(InputManager* input, GraphicsManager* graphics, StateManager* state)
+	: 
+	_input(input),
+	_graphics(graphics),
+	_state(state)
 {}
 
 void Entity::update(SDL_Event* event, TileMap* map) {
@@ -28,8 +30,8 @@ void Entity::render() {
 bool Entity::hasCollided(TileMap* map, double destX, double destY)
 {
 	// changes the origin of the entity accordingly so it collides properly
-	double posX = _currentDirection == RIGHT ? destX + _width : destX;
-	double posY = _currentDirection == DOWN ? destY + _height : destY;
+	double posX = getStateManager()->getDirection() == RIGHT ? destX + _width : destX;
+	double posY = getStateManager()->getDirection() == DOWN ? destY + _height : destY;
 
 	int tilePosX = std::round(posX) / double(map->getBlockSize());
 	int tilePosY = std::round(posY) / double(map->getBlockSize());
@@ -38,7 +40,7 @@ bool Entity::hasCollided(TileMap* map, double destX, double destY)
 	// scans for two adjacent tiles ahead of the entity
 	int indexes[2];
 
-	if (_currentDirection == RIGHT || _currentDirection == LEFT)
+	if (getStateManager()->getDirection() == RIGHT || getStateManager()->getDirection() == LEFT)
 	{
 		indexes[0] = tileIndex;
 		indexes[1] = ((tilePosY + 1) * (map->getMapWidth() / map->getBlockSize())) + tilePosX;
@@ -57,31 +59,20 @@ bool Entity::hasCollided(TileMap* map, double destX, double destY)
 	return false;
 }
 
-// TODO: create Vector2F class to handle x and y
-void Entity::setX(TileMap* map, double x) {
-	if (hasCollided(map, x, getY()))
+void Entity::setPosition(TileMap* map, double x, double y)
+{
+	if (hasCollided(map, x, getPosition()._y) || hasCollided(map, getPosition()._x, y))
 	{
 		return;
 	}
 
-	_x = x;
+	_position._x = x;
+	_position._y = y;
 }
 
-void Entity::setY(TileMap* map, double y) {
-	if (hasCollided(map, getX(), y))
-	{
-		return;
-	}
-
-	_y = y;
-}
-
-double Entity::getX() {
-	return _x;
-}
-
-double Entity::getY() {
-	return _y;
+Position Entity::getPosition()
+{
+	return _position;
 }
 
 int Entity::getWidth() {
@@ -92,34 +83,23 @@ int Entity::getHeight() {
 	return _height;
 }
 
-int Entity::getVelX() {
-	return _velX;
+Velocity Entity::getVelocity()
+{
+	return _velocity;
 }
 
-int Entity::getVelY() {
-	return _velY;
+void Entity::setVelocity(int velX, int velY)
+{
+	_velocity._velX = velX;
+	_velocity._velY = velY;
 }
 
-void Entity::setVelX(int velX) {
-	_velX = velX;
-}
-
-void Entity::setVelY(int velY) {
-	_velY = velY;
-}
-
-void Entity::setState(enum entityState newState) {
-	_currentState = newState;
-}
-
-void Entity::setDirection(enum entityDirections newDirection) {
-	_currentDirection = newDirection;
-}
-
-entityState Entity::getState() {
-	return _currentState;
-}
-
-entityDirections Entity::getDirection() {
-	return _currentDirection;
+StateManager* Entity::getStateManager()
+{
+	if (_state != nullptr)
+	{
+		return _state;
+	}
+	
+	return nullptr;
 }

@@ -175,7 +175,7 @@ void TileMap::update(Entity* player, World* world)
 
 void TileMap::loadNextMap()
 {
-	entityDirections currentDirection = _player->getDirection();
+	entityDirections currentDirection = _player->getStateManager()->getDirection();
 	int doorIndex = convertToDoorIndex(currentDirection);
 	bool hasParentNode = _currentNode->_parentNode != nullptr;
 	std::vector<int> doorsLocations = _currentNode->_doorsLocation;
@@ -246,23 +246,19 @@ void TileMap::loadNextMap()
 	}
 
 	// re-position player on the map
-	switch (_player->getDirection())
+	switch (_player->getStateManager()->getDirection())
 	{
 		case UP:
-			_player->setX(this, 14 * _BLOCK_SIZE);
-			_player->setY(this, 15 * _BLOCK_SIZE);
+			_player->setPosition(this, 14 * _BLOCK_SIZE, 15 * _BLOCK_SIZE);
 			break;
 		case RIGHT:
-			_player->setX(this, 1 * _BLOCK_SIZE);
-			_player->setY(this, 7 * _BLOCK_SIZE);
+			_player->setPosition(this, 1 * _BLOCK_SIZE, 7 * _BLOCK_SIZE);
 			break;
 		case DOWN:
-			_player->setX(this, 14 * _BLOCK_SIZE);
-			_player->setY(this, 1 * _BLOCK_SIZE);
+			_player->setPosition(this, 14 * _BLOCK_SIZE, 1 * _BLOCK_SIZE);
 			break;
 		case LEFT:
-			_player->setX(this, 28 * _BLOCK_SIZE);
-			_player->setY(this, 7 * _BLOCK_SIZE);
+			_player->setPosition(this, 28 * _BLOCK_SIZE, 7 * _BLOCK_SIZE);
 			break;
 	}
 

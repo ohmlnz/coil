@@ -4,6 +4,7 @@
 #include "entities/Entity.h"
 #include "entities/PlayerInput.h"
 #include "entities/PlayerGraphics.h"
+#include "entities/PlayerState.h"
 #include <vector>
 
 class World
