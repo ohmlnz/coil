@@ -1,0 +1,28 @@
+{
+    "permutations": {
+        // different environment types - based on the map's topography
+        "sand": [
+            [ "mob-1", "mob-2", "boss-1" ],
+            [ "mob-1", "mob-2", "mob-3" ],
+            [ "mob-2", "mob-2", "boss-2" ],
+            [ "mob-3", "boss-3", "boss-3" ],
+            [ "boss-1", "boss-2", "boss-3" ]
+        ],
+        "earth": [],
+        "steel": []
+    },
+    "mob-1": {
+        "id": 1,
+        "x": 0,
+        "y": 0,
+        "texture": "assets/sprites/mob-1.png",
+        "srcX": 16,
+        "srcY": 64,
+        "state": "down"
+    },
+    "mob-2": {},
+    "mob-3": {},
+    "boss-1": {},
+    "boss-2": {},
+    "boss-3": {}
+}

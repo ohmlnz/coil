@@ -9,7 +9,7 @@ World::~World() {}
 
 World::World(SDL_Renderer* renderer)
 	:	_renderer(renderer), 
-		// TODO: to remove - TEST ONLY
+		// TODO: Assign entities to _entities
 		_testPlayer(
 			new Entity(
 				new PlayerInput(),

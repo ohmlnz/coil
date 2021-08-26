@@ -20,8 +20,6 @@ void TreeLoader::deleteNode(Node* node) {
 }
 
 void TreeLoader::addNode(Node* node) {
-	int id = node->_id;
-
 	if (node->_id == 0)
 	{
 		_root = node;
@@ -57,7 +55,6 @@ void TreeLoader::addNode(Node* node) {
 			}
 		}
 	}
-	currentNode->_id = id;
 	node->_parentNode = currentNode;
 }
 
@@ -254,6 +251,7 @@ void TreeLoader::generateNodes() {
 	for (int index = 0; index < random; index++)
 	{
 		Node* node = new Node(index);
+		node->_id = index;
 		addNode(node);
 	}
 	printBT(_root);

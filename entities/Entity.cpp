@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity(InputManager* input, GraphicsManager* graphics, StateManager* state)
+Entity::Entity(InputManager* input = nullptr, GraphicsManager* graphics = nullptr, StateManager* state = nullptr)
 	: 
 	_input(input),
 	_graphics(graphics),
