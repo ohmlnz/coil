@@ -246,7 +246,7 @@ int TreeLoader::getDoorIndex(std::string door) {
 
 void TreeLoader::generateNodes() {
 	// TODO: add option to trigger randomization via keyboard input (debug mode)
-	int random = rand() % 11 + 10;
+	int random = rand() % 11 + 10; // random int between 10 and 20
 
 	for (int index = 0; index < random; index++)
 	{

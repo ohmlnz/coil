@@ -10,7 +10,10 @@
             "chest-centered",
             "chest-right"
         ],
-        "2": []
+        "2": [
+            "chest-right",
+            "mob-2-right"
+        ]
     },
     "mob-1-left": {
         "id": 1,

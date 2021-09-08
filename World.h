@@ -15,6 +15,7 @@ public:
 	~World();
 	void loadMap(Node* node);
 	void unloadMap(TileMap* map);
+	void loadEntities();
 	void reloadMap();
 	void render(double lag);
 	void update(SDL_Event* event);

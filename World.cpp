@@ -15,10 +15,21 @@ World::World(SDL_Renderer* renderer)
 		new PlayerInput()
 	))
 {
+	_tree = new TreeLoader();
+	loadMap(_tree->getRootNode());
+	// handle text and sound
+}
+
+void World::loadEntities()
+{
+	std::vector<Entity*> entities;
 	std::ifstream inputFile("assets/permutations/permutations.json");
 	inputFile >> _permutations;
 
-	for (auto entity : _permutations["permutations"]["1"])
+	
+	std::string random = std::to_string(rand() % 3 + 1);
+
+	for (auto entity : _permutations["permutations"][random])
 	{
 		Entity* newEntity;
 		entityData data;
@@ -32,25 +43,23 @@ World::World(SDL_Renderer* renderer)
 
 		if (_permutations[entityLabel]["static"])
 		{
-			newEntity = new Entity(new PlayerGraphics(data, renderer), nullptr, nullptr);
+			newEntity = new Entity(new PlayerGraphics(data, _renderer), nullptr, nullptr);
 		}
 		else
 		{
-			newEntity = new Entity(new PlayerGraphics(data, renderer), new PlayerState(), nullptr);
+			newEntity = new Entity(new PlayerGraphics(data, _renderer), new PlayerState(), nullptr);
 		}
 
-		_entities.push_back(newEntity);
+		entities.push_back(newEntity);
+		_entities = entities;
 	}
-
-	_tree = new TreeLoader();
-	loadMap(_tree->getRootNode());
-	// handle text and sound
 }
 
 void World::loadMap(Node* node)
 {
 	_currentNode = node;
 	_map = new TileMap(_renderer, _currentNode);
+	loadEntities();
 }
 
 void World::reloadMap()
@@ -65,7 +74,13 @@ void World::reloadMap()
 
 void World::unloadMap(TileMap* map)
 {
+	for (auto entity : _entities)
+	{
+		delete entity;
+		entity = nullptr;
+	}
 	delete map;
+	map = nullptr;
 }
 
 void World::render(double lag)
