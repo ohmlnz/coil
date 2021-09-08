@@ -1,4 +1,5 @@
 #pragma once
+#include "libs/json.h"
 #include "utils/TileMap.h"
 #include "utils/TreeLoader.h"
 #include "entities/Entity.h"
@@ -19,10 +20,11 @@ public:
 	void update(SDL_Event* event);
 private:
 	std::vector<Entity*> _entities;
+	Entity* _player;
 	TileMap* _map;
-	Entity* _testPlayer;
 	SDL_Renderer* _renderer;
 	Node* _currentNode;
 	TreeLoader* _tree;
+	nlohmann::json _permutations;
 	const std::string _rootPath;
 };

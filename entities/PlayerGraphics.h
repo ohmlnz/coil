@@ -5,9 +5,15 @@
 class PlayerGraphics : public GraphicsManager
 {
 public:
-	PlayerGraphics(const char* filePath, SDL_Renderer* renderer)
-		: GraphicsManager(filePath, renderer)
+	PlayerGraphics(entityData data, SDL_Renderer* renderer)
+		: GraphicsManager(data, renderer)
 	{}
+
+	virtual void initialize(Entity& entity)
+	{
+		entity.setPosition(nullptr, _x, _y);
+		entity.setDimensions(_width, _height);
+	}
 
 	// TODO: should not be part of the graphics component
 	virtual void update(Entity& entity, TileMap* map) {
@@ -19,15 +25,20 @@ public:
 	}
 
 	virtual void render(Entity& entity, bool& shouldBeAnimated) {
-		if (shouldBeAnimated)
+		if (!shouldBeAnimated)
+		{
+			srcRectX = _animations["source"]["frame"]["x"];
+			srcRectY = _animations["source"]["frame"]["y"];
+		}
+		else
 		{
 			animate(entity);
 		}
 
 		SDL_Rect srcRect, destRect;
 
-		srcRect.w = destRect.w = entity.getWidth();
-		srcRect.h = destRect.h = entity.getHeight();
+		srcRect.w = destRect.w = entity.getDimensions()._width;
+		srcRect.h = destRect.h = entity.getDimensions()._height;
 		srcRect.x = srcRectX;
 		srcRect.y = srcRectY;
 		destRect.x = entity.getPosition()._x;

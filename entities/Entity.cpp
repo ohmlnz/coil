@@ -1,11 +1,14 @@
 #include "Entity.h"
 
-Entity::Entity(InputManager* input = nullptr, GraphicsManager* graphics = nullptr, StateManager* state = nullptr)
+Entity::Entity(GraphicsManager* graphics = nullptr, StateManager* state = nullptr, InputManager* input = nullptr)
 	: 
-	_input(input),
 	_graphics(graphics),
-	_state(state)
-{}
+	_state(state),
+	_input(input),
+	_shouldBeAnimated(state != nullptr)
+{
+	_graphics->initialize(*this);
+}
 
 void Entity::update(SDL_Event* event, TileMap* map) {
 	if (_input != nullptr)
@@ -13,7 +16,7 @@ void Entity::update(SDL_Event* event, TileMap* map) {
 		_input->update(*this, event);
 	}
 
-	if (_graphics != nullptr)
+	if (_graphics != nullptr && _state != nullptr)
 	{
 		_graphics->update(*this, map);
 	}
@@ -22,16 +25,15 @@ void Entity::update(SDL_Event* event, TileMap* map) {
 void Entity::render() {
 	if (_graphics != nullptr)
 	{
-		bool shouldBeAnimated = true;
-		_graphics->render(*this, shouldBeAnimated);
+		_graphics->render(*this, _shouldBeAnimated);
 	}
 }
 
 bool Entity::hasCollided(TileMap* map, double destX, double destY)
 {
 	// changes the origin of the entity accordingly so it collides properly
-	double posX = getStateManager()->getDirection() == RIGHT ? destX + _width : destX;
-	double posY = getStateManager()->getDirection() == DOWN ? destY + _height : destY;
+	double posX = getStateManager()->getDirection() == RIGHT ? destX + getDimensions()._width : destX;
+	double posY = getStateManager()->getDirection() == DOWN ? destY + getDimensions()._height : destY;
 
 	int tilePosX = std::round(posX) / double(map->getBlockSize());
 	int tilePosY = std::round(posY) / double(map->getBlockSize());
@@ -61,9 +63,12 @@ bool Entity::hasCollided(TileMap* map, double destX, double destY)
 
 void Entity::setPosition(TileMap* map, double x, double y)
 {
-	if (hasCollided(map, x, getPosition()._y) || hasCollided(map, getPosition()._x, y))
+	if (map != nullptr)
 	{
-		return;
+		if (hasCollided(map, x, getPosition()._y) || hasCollided(map, getPosition()._x, y))
+		{
+			return;
+		}
 	}
 
 	_position._x = x;
@@ -75,12 +80,15 @@ Position Entity::getPosition()
 	return _position;
 }
 
-int Entity::getWidth() {
-	return _width;
+Dimensions Entity::getDimensions()
+{
+	return _dimensions;
 }
 
-int Entity::getHeight() {
-	return _height;
+void Entity::setDimensions(int width, int height)
+{
+	_dimensions._width = width;
+	_dimensions._height = height;
 }
 
 Velocity Entity::getVelocity()

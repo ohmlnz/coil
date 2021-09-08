@@ -16,7 +16,7 @@ public:
 private:
 	bool _isRunning;
 	World* _world;
-	SDL_Joystick* _gameController;
+	SDL_GameController* _gameController;
 	SDL_Event _event;
 	SDL_Window* _window;
 	SDL_Renderer* _renderer;

@@ -17,7 +17,7 @@ void Game::init(const char* title, int posX, int posY, int screenWidth, int scre
 		}
 		else
 		{
-			_gameController = SDL_JoystickOpen(0);
+			_gameController = SDL_GameControllerOpen(0);
 			if (_gameController == NULL)
 			{
 				SDL_Log("Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError());
@@ -70,7 +70,7 @@ void Game::render(double lag)
 
 void Game::clean()
 {
-	SDL_JoystickClose(_gameController);
+	SDL_GameControllerClose(_gameController);
 	TTF_Quit();
 	SDL_DestroyRenderer(_renderer);
 	SDL_DestroyWindow(_window);

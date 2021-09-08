@@ -254,8 +254,8 @@ void TreeLoader::generateNodes() {
 		node->_id = index;
 		addNode(node);
 	}
-	printBT(_root);
-	std::cout << std::endl;
+	//printBT(_root);
+	//std::cout << std::endl;
 	appendMapData(_root);
 }
 

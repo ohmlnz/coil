@@ -7,8 +7,8 @@
 
 struct Position
 {
-	double _x = 100;
-	double _y = 100;
+	double _x;
+	double _y;
 };
 
 struct Velocity
@@ -17,28 +17,32 @@ struct Velocity
 	int _velY;
 };
 
+struct Dimensions
+{
+	int _width;
+	int _height;
+};
+
 class Entity
 {
 public:
-	Entity(InputManager* input, GraphicsManager* graphics, StateManager* state);
+	Entity(GraphicsManager* graphics, StateManager* state, InputManager* input);
 	void update(SDL_Event* event, TileMap* map);
 	void render();
 	bool hasCollided(TileMap* map, double destX, double destY);
-	int getWidth();
-	int getHeight();
+	Dimensions getDimensions();
 	Position getPosition();
 	Velocity getVelocity();
 	StateManager* getStateManager();
+	void setDimensions(int width, int height);
 	void setPosition(TileMap* map, double x, double y);
 	void setVelocity(int velX, int velY);
 private:
 	Position _position;
 	Velocity _velocity;
-	// TODO: values should come from Tiled's json file
-	int _width = 32;
-	int _height = 32;
+	Dimensions _dimensions;
 	InputManager* _input;
 	GraphicsManager* _graphics;
 	StateManager* _state;
-	// AIManager
+	bool _shouldBeAnimated;
 };

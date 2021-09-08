@@ -1,0 +1,60 @@
+{
+    "permutations": {
+        "0": [
+            "mob-1-left",
+            "mob-2-right",
+            "chest-centered"
+        ],
+        "1": [
+            "chest-left",
+            "chest-centered",
+            "chest-right"
+        ],
+        "2": []
+    },
+    "mob-1-left": {
+        "id": 1,
+        "x": 300,
+        "y": 100,
+        "width": 32,
+        "height": 32,
+        "texture": "assets/sprites/player.json",
+        "static": false
+    },
+    "mob-2-right": {
+        "id": 2,
+        "x": 200,
+        "y": 200,
+        "width": 32,
+        "height": 32,
+        "texture": "assets/sprites/player.json",
+        "static": false
+    },
+    "chest-centered": {
+        "id": 3,
+        "x": 200,
+        "y": 200,
+        "width": 16,
+        "height": 16,
+        "texture": "assets/sprites/chest.json",
+        "static": true
+    },
+    "chest-right": {
+        "id": 3,
+        "x": 40,
+        "y": 40,
+        "width": 16,
+        "height": 16,
+        "texture": "assets/sprites/chest.json",
+        "static": true
+    },
+    "chest-left": {
+        "id": 3,
+        "x": 400,
+        "y": 200,
+        "width": 16,
+        "height": 16,
+        "texture": "assets/sprites/chest.json",
+        "static": true
+    }
+}
