@@ -3,15 +3,7 @@
 #include "../libs/json.h"
 #include <fstream>
 #include <iostream>
-
-struct entityData
-{
-	int width;
-	int height;
-	double x;
-	double y;
-	const char* texture;
-};
+#include "../entities/EntityData.h"
 
 class Entity;
 class TileMap;
@@ -20,7 +12,7 @@ class GraphicsManager
 {
 public:
 	virtual ~GraphicsManager() {}
-	GraphicsManager(entityData data, SDL_Renderer* renderer)
+	GraphicsManager(entityData& data, SDL_Renderer* renderer)
 		:	_renderer(renderer)
 	{
 		std::ifstream inputFile(data.texture);

@@ -1,47 +1,57 @@
 #pragma once
 #include "World.h"
+#include "utils/TileMap.h"
 #include <fstream>
-#include <iostream>
 
 // TODO: clean up
 World::~World() {}
 
 World::World(SDL_Renderer* renderer)
 	: 
-	_renderer(renderer),
-	_player(new Entity(
-		new PlayerGraphics({ 32, 32, 50, 50, "assets/sprites/player.json" }, renderer),
-		new PlayerState(),
-		new PlayerInput()
-	))
+	_renderer(renderer)
 {
+	// TODO: create a utility method
+	srand(time(NULL));
+	entityData playerData = { 32, 32, 50, 50, "assets/sprites/player.json", false };
+	_player = new Entity(new PlayerGraphics(playerData, renderer), new PlayerState(), new PlayerInput());
 	_tree = new TreeLoader();
 	loadMap(_tree->getRootNode());
 	// handle text and sound
 }
 
-void World::loadEntities()
+void World::loadMap(Node* node)
 {
-	std::vector<Entity*> entities;
+	_currentNode = node;
+	_map = new TileMap(_renderer, _currentNode);
+	loadEntities(_currentNode);
+}
+
+void World::loadEntities(Node* node)
+{
 	std::ifstream inputFile("assets/permutations/permutations.json");
 	inputFile >> _permutations;
 
-	
-	std::string random = std::to_string(rand() % 3 + 1);
+	// TODO: calculate total nb of permutations dynamically
+	std::string random = std::to_string(rand() % 3);
+	std::vector<Entity*> entities;
 
 	for (auto entity : _permutations["permutations"][random])
 	{
 		Entity* newEntity;
-		entityData data;
 		std::string entityLabel = entity;
-		std::string entityTexture = _permutations[entityLabel]["texture"];
-		data.texture = entityTexture.data();
-		data.width = _permutations[entityLabel]["width"];
-		data.height = _permutations[entityLabel]["height"];
-		data.x = _permutations[entityLabel]["x"];
-		data.y = _permutations[entityLabel]["y"];
+		std::string textureString = _permutations[entityLabel]["texture"];
+		const char* textureChar = textureString.data();
 
-		if (_permutations[entityLabel]["static"])
+		entityData data = {
+			_permutations[entityLabel]["width"],
+			_permutations[entityLabel]["height"],
+			_permutations[entityLabel]["x"],
+			_permutations[entityLabel]["y"],
+			textureChar,
+			_permutations[entityLabel]["static"],
+		};
+
+		if (data.isStatic)
 		{
 			newEntity = new Entity(new PlayerGraphics(data, _renderer), nullptr, nullptr);
 		}
@@ -51,15 +61,9 @@ void World::loadEntities()
 		}
 
 		entities.push_back(newEntity);
-		_entities = entities;
 	}
-}
 
-void World::loadMap(Node* node)
-{
-	_currentNode = node;
-	_map = new TileMap(_renderer, _currentNode);
-	loadEntities();
+	_entities = entities;
 }
 
 void World::reloadMap()

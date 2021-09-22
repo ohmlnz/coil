@@ -6,6 +6,8 @@
 #include <queue>
 #include <algorithm>
 #include "../libs/cute_tiled.h"
+#include "../entities/EntityData.h"
+
 
 class Node
 {
@@ -20,6 +22,7 @@ public:
 	Node* _parentNode;
 	std::string _mapPath;
 	std::vector<int> _doorsLocation;
+	std::vector<entityData*> _entitiesData;
 	int _opposedToParentDoor = -1;
 private:
 
