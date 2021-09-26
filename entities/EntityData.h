@@ -6,6 +6,6 @@ struct entityData
 	int height;
 	double x;
 	double y;
-	const char* texture;
+	std::string texture;
 	bool isStatic;
 };

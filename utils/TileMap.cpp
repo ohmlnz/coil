@@ -107,6 +107,7 @@ bool TileMap::isTileCollidable(int indexes[])
 			{
 				isLoadingMap = true;
 				loadNextMap();
+				return false;
 			}
 			return true;
 		}
@@ -180,9 +181,6 @@ void TileMap::loadNextMap()
 	bool hasParentNode = _currentNode->_parentNode != nullptr;
 	std::vector<int> doorsLocations = _currentNode->_doorsLocation;
 
-	cute_tiled_map_t* oldMapData = _mapData;
-	SDL_Texture* oldTexture = _mapTexture;
-
 	if (hasParentNode)
 	{
 		std::vector<int> nonParentDoors;
@@ -197,7 +195,6 @@ void TileMap::loadNextMap()
 
 		if (_currentNode->_opposedToParentDoor == doorIndex)
 		{
-			std::cout << "load node: " << _currentNode->_parentNode->_id  << std::endl;
 			_world->loadMap(_currentNode->_parentNode);
 		}
 		else
@@ -207,12 +204,10 @@ void TileMap::loadNextMap()
 			{
 				if (nonParentDoors[0] == doorIndex)
 				{
-					std::cout << "load node: " << _currentNode->_rightNode->_id << std::endl;
 					_world->loadMap(_currentNode->_rightNode);
 				}
 				else
 				{
-					std::cout << "load node: " << _currentNode->_leftNode->_id << std::endl;
 					_world->loadMap(_currentNode->_leftNode);
 				}
 			}
@@ -220,12 +215,10 @@ void TileMap::loadNextMap()
 			{
 				if (_currentNode->_rightNode != nullptr)
 				{
-					std::cout << "load node: " << _currentNode->_rightNode->_id << std::endl;
 					_world->loadMap(_currentNode->_rightNode);
 				}
 				else
 				{
-					std::cout << "load node: " << _currentNode->_leftNode->_id << std::endl;
 					_world->loadMap(_currentNode->_leftNode);
 				}
 			}
@@ -235,35 +228,13 @@ void TileMap::loadNextMap()
 	{
 		if (doorsLocations[0] == doorIndex)
 		{
-			std::cout << "load node: " << _currentNode->_rightNode->_id << std::endl;
 			_world->loadMap(_currentNode->_rightNode);
 		}
 		else if (doorsLocations[1] == doorIndex)
 		{
-			std::cout << "load node: " << _currentNode->_leftNode->_id << std::endl;
 			_world->loadMap(_currentNode->_leftNode);
 		}
 	}
-
-	// re-position player on the map
-	switch (_player->getStateManager()->getDirection())
-	{
-		case UP:
-			_player->setPosition(this, 14 * _BLOCK_SIZE, 15 * _BLOCK_SIZE);
-			break;
-		case RIGHT:
-			_player->setPosition(this, 1 * _BLOCK_SIZE, 7 * _BLOCK_SIZE);
-			break;
-		case DOWN:
-			_player->setPosition(this, 14 * _BLOCK_SIZE, 1 * _BLOCK_SIZE);
-			break;
-		case LEFT:
-			_player->setPosition(this, 28 * _BLOCK_SIZE, 7 * _BLOCK_SIZE);
-			break;
-	}
-
-	SDL_DestroyTexture(oldTexture);
-	cute_tiled_free_map(oldMapData);
 }
 
 int TileMap::getMapWidth() const

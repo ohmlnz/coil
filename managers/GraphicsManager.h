@@ -11,17 +11,21 @@ class TileMap;
 class GraphicsManager
 {
 public:
-	virtual ~GraphicsManager() {}
-	GraphicsManager(entityData& data, SDL_Renderer* renderer)
+	~GraphicsManager()
+	{
+		SDL_DestroyTexture(_texture);
+	}
+
+	GraphicsManager(entityData* data, SDL_Renderer* renderer)
 		:	_renderer(renderer)
 	{
-		std::ifstream inputFile(data.texture);
+		std::ifstream inputFile(data->texture.data());
 		inputFile >> _animations;
 		std::string imagePath = "assets/sprites/" + std::string(_animations["meta"]["image"]);
-		_width = data.width;
-		_height = data.height;
-		_x = data.x;
-		_y = data.y;
+		_width = data->width;
+		_height = data->height;
+		_x = data->x;
+		_y = data->y;
 		_texture = AssetsManager::loadTexture(imagePath.c_str(), renderer);
 	}
 	virtual void initialize(Entity& entity) = 0;

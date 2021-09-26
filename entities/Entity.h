@@ -26,6 +26,7 @@ struct Dimensions
 class Entity
 {
 public:
+	~Entity();
 	Entity(GraphicsManager* graphics, StateManager* state, InputManager* input);
 	void update(SDL_Event* event, TileMap* map);
 	void render();

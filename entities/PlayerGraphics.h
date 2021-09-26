@@ -5,7 +5,7 @@
 class PlayerGraphics : public GraphicsManager
 {
 public:
-	PlayerGraphics(entityData& data, SDL_Renderer* renderer)
+	PlayerGraphics(entityData* data, SDL_Renderer* renderer)
 		: GraphicsManager(data, renderer)
 	{}
 

@@ -29,8 +29,8 @@ public:
 	bool isTileAnimated(int id) const;
 	bool isTileCollidable(int indexes[]);
 	bool isAnimationCurrentlyRunning(int id, int position) const;
-private:
 	bool isLoadingMap = false;
+private:
 	int const _tilesetWidth = 10;
 	int const _BLOCK_SIZE = 16;
 	int _mapTotalBlocks;

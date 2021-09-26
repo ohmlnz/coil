@@ -1,5 +1,17 @@
 #include "Entity.h"
 
+Entity::~Entity()
+{
+	delete _graphics;
+	_graphics = nullptr;
+
+	delete _state;
+	_state = nullptr;
+
+	delete _input;
+	_input = nullptr;
+}
+
 Entity::Entity(GraphicsManager* graphics = nullptr, StateManager* state = nullptr, InputManager* input = nullptr)
 	: 
 	_graphics(graphics),
@@ -31,34 +43,37 @@ void Entity::render() {
 
 bool Entity::hasCollided(TileMap* map, double destX, double destY)
 {
-	// changes the origin of the entity accordingly so it collides properly
-	double posX = getStateManager()->getDirection() == RIGHT ? destX + getDimensions()._width : destX;
-	double posY = getStateManager()->getDirection() == DOWN ? destY + getDimensions()._height : destY;
-
-	int tilePosX = std::round(posX) / double(map->getBlockSize());
-	int tilePosY = std::round(posY) / double(map->getBlockSize());
-	int tileIndex = (tilePosY * (map->getMapWidth() / map->getBlockSize())) + tilePosX;
-
-	// scans for two adjacent tiles ahead of the entity
-	int indexes[2];
-
-	if (getStateManager()->getDirection() == RIGHT || getStateManager()->getDirection() == LEFT)
+	if (!map->isLoadingMap)
 	{
-		indexes[0] = tileIndex;
-		indexes[1] = ((tilePosY + 1) * (map->getMapWidth() / map->getBlockSize())) + tilePosX;
-	}
-	else
-	{
-		indexes[0] = tileIndex;
-		indexes[1] = (tilePosY * (map->getMapWidth() / map->getBlockSize())) + tilePosX + 1;
-	}
+		// changes the origin of the entity accordingly so it collides properly
+		double posX = getStateManager()->getDirection() == RIGHT ? destX + getDimensions()._width : destX;
+		double posY = getStateManager()->getDirection() == DOWN ? destY + getDimensions()._height : destY;
 
-	if (map->isTileCollidable(indexes))
-	{
-		return true;
-	}
+		int tilePosX = std::round(posX) / double(map->getBlockSize());
+		int tilePosY = std::round(posY) / double(map->getBlockSize());
+		int tileIndex = (tilePosY * (map->getMapWidth() / map->getBlockSize())) + tilePosX;
 
-	return false;
+		// scans for two adjacent tiles ahead of the entity
+		int indexes[2];
+
+		if (getStateManager()->getDirection() == RIGHT || getStateManager()->getDirection() == LEFT)
+		{
+			indexes[0] = tileIndex;
+			indexes[1] = ((tilePosY + 1) * (map->getMapWidth() / map->getBlockSize())) + tilePosX;
+		}
+		else
+		{
+			indexes[0] = tileIndex;
+			indexes[1] = (tilePosY * (map->getMapWidth() / map->getBlockSize())) + tilePosX + 1;
+		}
+
+		if (map->isTileCollidable(indexes))
+		{
+			return true;
+		}
+
+		return false;
+	}
 }
 
 void Entity::setPosition(TileMap* map, double x, double y)

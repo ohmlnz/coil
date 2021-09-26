@@ -18,9 +18,7 @@ public:
 	World(SDL_Renderer* renderer);
 	~World();
 	void loadMap(Node* node);
-	void unloadMap(TileMap* map);
 	void loadEntities(Node* node);
-	void reloadMap();
 	void render(double lag);
 	void update(SDL_Event* event);
 private:
@@ -30,6 +28,7 @@ private:
 	SDL_Renderer* _renderer;
 	Node* _currentNode;
 	TreeLoader* _tree;
+	entityDirections _exitDirection;
 	const std::string _rootPath;
 	nlohmann::json _permutations;
 };
